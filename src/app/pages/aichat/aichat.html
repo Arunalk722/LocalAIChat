@@ -1,0 +1,110 @@
+<section class="chat-view" aria-label="Chat with local AI">
+  <div class="messages" aria-live="polite">
+    @if (messages.length === 0) {
+      <div class="welcome">
+        <div class="welcome-mark" aria-hidden="true">AI</div>
+        <p class="eyebrow">YOUR LOCAL CODING PARTNER</p>
+        <h1>What are we<br /><span>building today?</span></h1>
+        <p class="welcome-copy">
+          Ask a question, untangle a bug, or turn an idea into working code.
+        </p>
+        <div class="suggestions" aria-label="Suggested prompts">
+          <button type="button" (click)="submitMessage('Help me debug a Python error')">
+            Debug a Python error <span aria-hidden="true">↗</span>
+          </button>
+          <button
+            type="button"
+            (click)="
+              submitMessage('Write a clean TypeScript function to validate an email address')
+            "
+          >
+            Write a TypeScript function <span aria-hidden="true">↗</span>
+          </button>
+          <button
+            type="button"
+            (click)="submitMessage('Explain how REST APIs work with a simple example')"
+          >
+            Explain a technical concept <span aria-hidden="true">↗</span>
+          </button>
+        </div>
+      </div>
+    } @else {
+      <div class="thread">
+        @for (message of messages; track message.id) {
+          <article
+            class="message"
+            [class.user-message]="message.role === 'user'"
+            [class.ai-message]="message.role === 'assistant'"
+          >
+            <div
+              class="message-avatar"
+              [class.assistant-avatar]="message.role === 'assistant'"
+              aria-hidden="true"
+            >
+              {{ message.role === 'user' ? 'Y' : 'AI' }}
+            </div>
+            <div class="message-content">
+              <p class="message-author">{{ message.role === 'user' ? 'You' : 'Assistant' }}</p>
+              <div class="message-text">
+                @for (block of messageSegments(message); track $index) {
+                  @if (block.type === 'code') {
+                    <div class="code-block">
+                      <div class="code-header">
+                        <span>{{ block.language || 'code' }}</span>
+                        <span class="code-badge">CODE</span>
+                      </div>
+                      <pre><code>{{ block.content }}</code></pre>
+                    </div>
+                  } @else {
+                    <p class="message-paragraph">
+                      @for (part of inlineTextParts(block.content); track $index) {
+                        @if (part.bold) {
+                          <strong>{{ part.text }}</strong>
+                        } @else {
+                          {{ part.text }}
+                        }
+                      }
+                    </p>
+                  }
+                }
+              </div>
+            </div>
+          </article>
+        }
+        @if (busy) {
+          <div class="message ai-message" aria-label="Local AI is thinking">
+            <div class="message-avatar assistant-avatar" aria-hidden="true">AI</div>
+            <div class="thinking">
+              <span></span><span></span><span></span>
+              <p>Thinking through it</p>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <div class="composer-area">
+    @if (errorMessage) {
+      <p class="error-message" role="alert">{{ errorMessage }}</p>
+    }
+    <form class="composer" (ngSubmit)="submitMessage()">
+      <textarea
+        name="message"
+        [(ngModel)]="draft"
+        placeholder="Message local AI..."
+        aria-label="Message local AI"
+        rows="1"
+        [disabled]="busy"
+        (keydown.enter)="onEnter($event)"
+      ></textarea>
+      <div class="composer-footer">
+        <span>Enter to send · Shift + Enter for a new line</span>
+        <button class="send-button" type="submit" [disabled]="!draft.trim() || busy">
+          <span aria-hidden="true">↑</span>
+        </button>
+      </div>
+    </form>
+    <p class="disclaimer">AI can make mistakes. Check important code before using it.</p>
+  </div>
+</section>

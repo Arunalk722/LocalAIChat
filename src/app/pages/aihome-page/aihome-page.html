@@ -1,0 +1,65 @@
+<div class="workspace">
+  <aside class="sidebar" aria-label="Conversation history">
+    <a class="brand" routerLink="/" aria-label="Local AI home">
+      <span class="brand-mark">AI</span>
+      <span>local ai<span class="brand-dot">.</span></span>
+    </a>
+
+    <button class="new-chat" type="button" (click)="startConversation()">
+      <span aria-hidden="true">+</span> New conversation
+    </button>
+
+    <div class="history-heading">
+      <span>YOUR CHATS</span>
+      <span class="history-count">{{ conversations().length }}</span>
+    </div>
+    <nav class="conversation-list" aria-label="Saved conversations">
+      @for (conversation of conversations(); track conversation.id) {
+        <div class="conversation-row" [class.selected]="activeId() === conversation.id">
+          <button
+            class="conversation-select"
+            type="button"
+            (click)="openConversation(conversation.id)"
+            [attr.aria-current]="activeId() === conversation.id ? 'page' : null"
+          >
+            <span class="conversation-icon" aria-hidden="true">↳</span>
+            <span class="conversation-title">{{ conversation.title }}</span>
+          </button>
+          <button
+            class="delete-chat"
+            type="button"
+            (click)="deleteConversation($event, conversation.id)"
+            [attr.aria-label]="'Delete ' + conversation.title"
+          >
+            ×
+          </button>
+        </div>
+      } @empty {
+        <p class="empty-history">Your conversations will appear here.</p>
+      }
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="service-status" [class.online]="apiOnline()">
+        <span class="status-dot"></span>
+        <span>{{
+          apiOnline() ? (modelLoaded() ? 'AI ready' : 'API connected') : 'API offline'
+        }}</span>
+      </div>
+      <p>Local AI assistant</p>
+    </div>
+  </aside>
+
+  <main class="main-panel">
+    <header class="topbar">
+      <span class="topbar-context">{{ activeConversation()?.title || 'New conversation' }}</span>
+      <span class="local-label"><span aria-hidden="true">●</span> PRIVATE · LOCAL</span>
+    </header>
+    <app-aichat
+      [messages]="activeConversation()?.messages ?? []"
+      [busy]="sending()"
+      [errorMessage]="errorMessage()"
+      (messageSent)="sendMessage($event)"
+    />
+  </main>
+</div>

@@ -1,1 +1,42 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  color-scheme: light;
+  font-family: 'Aptos', 'Trebuchet MS', sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  --paper: #f8f7f1;
+  --ink: #202c27;
+  --forest: #185c49;
+  --copper: #a45b35;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  min-width: 320px;
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  background-color: var(--paper);
+  background-image: radial-gradient(rgb(54 72 61 / 4%) 0.65px, transparent 0.65px);
+  background-size: 7px 7px;
+  color: var(--ink);
+}
+
+button,
+textarea {
+  font: inherit;
+}
+
+button:focus-visible,
+a:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #397f68;
+  outline-offset: 3px;
+}
